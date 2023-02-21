@@ -41,11 +41,17 @@ Make_geomPoint <- function(x, Occur) {
 
 Make_geomPoint(SoftData3, 2)
 
-# Clear packages
-p_unload(dplyr, tidyr, stringr) # Clear specific packages
-p_unload(all)  # Easier: clears all add-ons
-detach("package:datasets", unload = TRUE)  # For base
 
-# Clear console
-cat("\014")  # ctrl+L
 
+clearAllExceptenvironment <- function(x, Occur) {
+  # Clear packages
+  #p_unload(dplyr, tidyr, stringr) # Clear specific packages
+  p_unload(all)  # Easier: clears all add-ons
+  detach("package:datasets", unload = TRUE)  # For base
+  
+  # Clear console
+  cat("\014")  # ctrl+L
+}
+
+
+clearAllExceptenvironment()
