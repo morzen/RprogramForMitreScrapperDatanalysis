@@ -11,7 +11,7 @@ SoftData3 <- fromJSON(file="/Users/morzen/Desktop/work/RprogramForMitreScrapperD
 #NoDubID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
 
 
-Make_geomPoint <- function(x, Occur) { 
+Make_geomPoint_APTY <- function(x, Occur) { 
   Firstdataframe <- as.data.frame(x)
   
   ID<-Firstdataframe$ID
@@ -38,8 +38,41 @@ Make_geomPoint <- function(x, Occur) {
     theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
 }
 
+Make_geomPoint_APTX <- function(x, Occur) { 
+  Firstdataframe <- as.data.frame(x)
+  
+  ID<-Firstdataframe$ID
+  APTname<-Firstdataframe$APTname
+  GeomPointFunctionData1 <-data.frame(ID, APTname)
+  
+  #supposed to remove every techniques whose occurence is under 10
+  GeomPointFunctionData1 <- GeomPointFunctionData1 %>% group_by(ID) %>% filter(n()>Occur)
+  
+  #graph before classifying occurence on x axis
+  # ggplot(GeomPointFunctionData1, aes(ID, APTname)) +
+  #   geom_point() +
+  #   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+  
+  
+  #supposed to classify techniques on x axis from biggest occurence to smallest
+  GeomPointFunctionData2 <- data.frame(GeomPointFunctionData1)
+  GeomPointFunctionData2 <- GeomPointFunctionData2 %>% add_count(ID) %>% arrange(desc(n))
+  
+  
+  listnoduplicate = GeomPointFunctionData2$ID[!duplicated(GeomPointFunctionData2$ID)]
+  ggplot(GeomPointFunctionData2, aes(x=APTname, y=factor(ID, level=c(listnoduplicate)))) +
+    geom_point() +
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+}
 
-Make_geomPoint(SoftData3, 2)
+
+Make_geomPoint_APTY(TotalData1, 9)
+
+Make_geomPoint_APTX(TotalData1, 9)
+
+
+
+
 
 
 
@@ -52,6 +85,5 @@ clearAllExceptenvironment <- function(x, Occur) {
   # Clear console
   cat("\014")  # ctrl+L
 }
-
-
 clearAllExceptenvironment()
+
