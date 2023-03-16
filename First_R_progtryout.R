@@ -3,17 +3,24 @@ library("ggplot2")
 library("tidyverse")
 library("dplyr")
 
-#TotalData1 <- fromJSON(file="/Users/morzen/Desktop/work/RprogramForMitreScrapperDatanalysis/results/Rformat_TOTAL16-02-2023_00-12-41_Mitre_APT.json")
-#TechData2 <- fromJSON(file="/Users/morzen/Desktop/work/RprogramForMitreScrapperDatanalysis/results/Rformat_TECH16-02-2023_00-12-41_Mitre_APT.json")
-#SoftData3 <- fromJSON(file="/Users/morzen/Desktop/work/RprogramForMitreScrapperDatanalysis/results/Rformat_SOFT16-02-2023_00-12-41_Mitre_APT.json")
+# Mac path
+MacPwd <- "/Users/morzen/Desktop/work/RprogramForMitreScrapperDatanalysis/results/15-03-2023"
+TacticsData <- fromJSON(file=paste(MacPwd,"/","Rformat_Tactics15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
+TechData <- fromJSON(file=paste(MacPwd,"/","Rformat_Techniques15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
+SoftData <- fromJSON(file=paste(MacPwd,"/","Rformat_Software15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
+GroupsData3 <- fromJSON(file=paste(MacPwd,"/","Rformat_Groups15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
 
 
-TotalData1 <- fromJSON(file="/home/morzen/Desktop/RprogramForMitreScrapperDatanalysis/results/Rformat_TOTAL16-02-2023_00-12-41_Mitre_APT.json")
-TechData2 <- fromJSON(file="/home/morzen/Desktop/RprogramForMitreScrapperDatanalysis/results/Rformat_TECH16-02-2023_00-12-41_Mitre_APT.json")
-SoftData3 <- fromJSON(file="/home/morzen/Desktop/RprogramForMitreScrapperDatanalysis/results/Rformat_SOFT16-02-2023_00-12-41_Mitre_APT.json")
+# Windows path
+#WinPwd <-
+#TacticsData <- 
+#TechData <-
+#SoftData <-
+#GroupsData3 <-
 
-#NoDubAPTname = json_Techdata_frame2$APTname[!duplicated(json_Techdata_frame2$APTname)]
-#NoDubID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
+
+#NoDuplicateAPTname = json_Techdata_frame2$APTname[!duplicated(json_Techdata_frame2$APTname)]
+#NoDuplicateID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
 
 
 Make_geomPoint_APTY <- function(x, Occur) { 
@@ -99,7 +106,7 @@ Make_geomPoint_APTX <- function(x, Occur) {
 }
 
 #the int is for the number of occurence of techniques not apts
-Make_geomPoint_APTY(TotalData1, 1)
+Make_geomPoint_APTY(TotalData1, 10)
 
 Make_geomPoint_APTX(TotalData1, 1)
 
