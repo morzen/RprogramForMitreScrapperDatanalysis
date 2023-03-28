@@ -4,11 +4,11 @@ library("tidyverse")
 library("dplyr")
 
 # Mac path
-MacPwd <- "/Users/morzen/Desktop/work/RprogramForMitreScrapperDatanalysis/results/15-03-2023"
-TacticsData <- fromJSON(file=paste(MacPwd,"/","Rformat_Tactics15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
-TechData <- fromJSON(file=paste(MacPwd,"/","Rformat_Techniques15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
-SoftData <- fromJSON(file=paste(MacPwd,"/","Rformat_Software15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
-GroupsData3 <- fromJSON(file=paste(MacPwd,"/","Rformat_Groups15-03-2023_17-55-57_Mitre_APT.json", sep = ""))
+MacPwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/21-03-2023"
+TacticsData <- fromJSON(file=paste(MacPwd,"/","Rformat_Tactics21-03-2023_23-51-34_Mitre_APT.json", sep = ""))
+TechData <- fromJSON(file=paste(MacPwd,"/","Rformat_Techniques21-03-2023_11-15-50_Mitre_APT.json", sep = ""))
+SoftData <- fromJSON(file=paste(MacPwd,"/","Rformat_Software21-03-2023_11-15-50_Mitre_APT.json", sep = ""))
+GroupsData <- fromJSON(file=paste(MacPwd,"/","Rformat_Groups21-03-2023_11-15-50_Mitre_APT.json", sep = ""))
 
 
 # Windows path
@@ -19,10 +19,44 @@ GroupsData3 <- fromJSON(file=paste(MacPwd,"/","Rformat_Groups15-03-2023_17-55-57
 #GroupsData3 <-
 
 
+
+DataExtraction <- function(x) { 
+  list1 <- list()
+  list2 <- list()
+  
+  for (items in x){
+    print(items)
+    
+    for (item1 in items$HeadersAndTables$`Techniques Used`$ID){
+      print(item1)
+      list1[[length(list1)+1]] = item1
+    }
+ 
+    for (item2 in items$HeadersAndTables$`Techniques Used`$Name){
+      print(item2)
+      list2[[length(list2)+1]] = item2
+    }
+
+  }
+  print(length(list1))
+  print(length(list2))
+  dataframe <- as.data.frame(list1, list2)
+  return (dataframe)
+}
+
+#DataExtraction(GroupsData)
+IDtests <- DataExtraction(GroupsData)
+
+
+
+
+
+GroupIDandName <- fromJSON(file=paste("/Users/morzen/Desktop/MitreAttackAPTscrapper/DataAnalysisAndformatingPythonScrip/results/GroupIDandName.json", sep = ""))
+
 #NoDuplicateAPTname = json_Techdata_frame2$APTname[!duplicated(json_Techdata_frame2$APTname)]
 #NoDuplicateID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
 
-
+#ID and Sodtware for gruops
 Make_geomPoint_APTY <- function(x, Occur) { 
   Firstdataframe <- as.data.frame(x)
   
