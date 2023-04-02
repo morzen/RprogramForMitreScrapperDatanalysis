@@ -114,8 +114,8 @@ GroupIDandName <- fromJSON(file=paste("/Users/morzen/Desktop/MitreAttackAPTscrap
 #NoDuplicateID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
 
 GroupIDandNamedf <- as.data.frame(GroupIDandName)
-NoDuplicateTACTICS = GroupIDandNamedf$Tactic_s[!duplicated(GroupIDandNamedf$Tactic_s)]
-NoDuplicateTACTICS <- as.data.frame(NoDuplicateTACTICS)
+# NoDuplicateTACTICS = GroupIDandNamedf$Tactic_s[!duplicated(GroupIDandNamedf$Tactic_s)]
+# NoDuplicateTACTICS <- as.data.frame(NoDuplicateTACTICS)
 
 #ID and Sodtware for gruops
 Make_geomPoint_APTY_TacticBias <- function(x, Occur, RequestedTactic) {
@@ -134,6 +134,9 @@ Make_geomPoint_APTY_TacticBias <- function(x, Occur, RequestedTactic) {
   GeomPointFunctionData2 <- data.frame(GeomPointFunctionData1)
   GeomPointFunctionData2 <- GeomPointFunctionData2 %>% filter(grepl(RequestedTactic, GeomPointFunctionData2$Tactic_s))
   GeomPointFunctionData2 <- GeomPointFunctionData2 %>% add_count(ID) %>% arrange(desc(n))
+  
+  # comment the line below to remove the only string tactics option and have tactics combination
+  GeomPointFunctionData2 <- GeomPointFunctionData2[!grepl(",", GeomPointFunctionData2$Tactic_s),]
   
   
   DataForYaxis <- GeomPointFunctionData %>% add_count(APTname) %>% arrange(desc(n))
@@ -163,21 +166,28 @@ Make_geomPoint_APTY_TacticBias <- function(x, Occur, RequestedTactic) {
 }
 
 Make_geomPoint_APTX_TacticBias <- function(x, Occur, RequestedTactic) { 
+  # x <- GroupIDandName
+  # Occur <- 0
+  # RequestedTactic <- "Discovery"
+  
   Firstdataframe <- as.data.frame(x)
   
   ID<-Firstdataframe$ID
   APTname<-Firstdataframe$APTname
-  Tactics <- Firstdataframe$Tactic_s
+  Tactic_s <- Firstdataframe$Tactic_s
   
-  GeomPointFunctionData <-data.frame(ID, APTname)
+  GeomPointFunctionData <-data.frame(ID, APTname, Tactic_s)
   
-  #supposed to remove every techniques whose occurence is under 10
+  #supposed to remove every techniques whose occurence is under Occur
   GeomPointFunctionData1 <- GeomPointFunctionData %>% group_by(ID) %>% filter(n()>Occur)
   
   #supposed to classify techniques on x axis from biggest occurence to smallest
   GeomPointFunctionData2 <- data.frame(GeomPointFunctionData1)
   GeomPointFunctionData2 <- GeomPointFunctionData2 %>% filter(grepl(RequestedTactic, GeomPointFunctionData2$Tactic_s))
   GeomPointFunctionData2 <- GeomPointFunctionData2 %>% add_count(ID) %>% arrange(desc(n))
+  
+  # comment the line below to remove the only string tactics option and have tactics combination
+  GeomPointFunctionData2 <- GeomPointFunctionData2[!grepl(",", GeomPointFunctionData2$Tactic_s),]
   
   
   DataForXaxis <- GeomPointFunctionData %>% add_count(APTname) %>% arrange(desc(n))
@@ -208,7 +218,7 @@ Make_geomPoint_APTX_TacticBias <- function(x, Occur, RequestedTactic) {
 }
 
 #the int is for the number of occurence of techniques not apts
-Make_geomPoint_APTY_TacticBias(GroupIDandName, 0, 'Discovery')
+Make_geomPoint_APTY_TacticBias(GroupIDandName, 0, 'Evasion')
 
 Make_geomPoint_APTX_TacticBias(GroupIDandName, 0, 'Discovery')
 
