@@ -15,6 +15,9 @@ TechData <- fromJSON(file=paste(MacPwd,"/","Rformat_Techniques24-03-2023_12-13-4
 GroupsData <- fromJSON(file=paste(MacPwd,"/","Rformat_Groups24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 
 
+
+
+
 TechDataDFcreation <- function(TechData) {
   TechID <- list()
   TechTactics <- list()
@@ -46,43 +49,19 @@ TechDataDFcreation <- function(TechData) {
 
 TurnComboTacticToList <- function(TacticList) {
   
-  for (tactics in TacticList) {
-    # print(tactic)
-    CheckComma <- grepl(",", tactics)
-    if (CheckComma == TRUE){
-      tactic_s <- strsplit(tactics, ',')
-      for (element in tactic_s) {
-        for (thing in element){
-          thing <- str_trim(thing)
-          
-        }
-        
-      }
-      # print(typeof(tactic))
-    }
-    
-  }
-  
-}
-
-V2 <- function(TacticList) {
-  
   for(i in 1:length(TacticList)){
     CheckComma <- grepl(",", TacticList[i])
     if (CheckComma == TRUE){
-      TacticList[i] <- strsplit(TacticList[i], ',')
+      TacticList[i] <- str_trim(TacticList[i], "left")#remove first space
       # print(TacticList[i])
       
-      for (element in TacticList[i]){
-        for (thing in element){
-          print(thing)
-        }
-        
-      }
+      TacticList[i] <- list(strsplit(as.character(TacticList[i]), split = ", "))
+      # print(TacticList[i])
       
     }
   }
-    
+  
+  return(TacticList)
 }
 
 
@@ -96,5 +75,63 @@ NoDuplicateTechTactics <- as.data.frame(NoDuplicateTechTactics)
 NoDuplicateTechTacticsNoComboc <-   NoDuplicateTechTactics[!grepl(",", NoDuplicateTechTactics$NoDuplicateTechTactics),]
 NoDuplicateTechTacticsNoComboc <- as.data.frame(NoDuplicateTechTacticsNoComboc)
 
-TurnComboTacticToList(TechDataDF$TechTactics)
-V2(TechDataDF$TechTactics)
+TechDataDF$TechTactics <- TurnComboTacticToList(TechDataDF$TechTactics)
+
+
+
+
+# SpiderGraph <- function(APTnameOrID){
+IDlist <- list()
+Namelist <- list()
+# print(names(GroupsData)) to get keys
+for (element in names(GroupsData)){
+  IDlist <- append(IDlist, element)
+  Namelist <- append(Namelist, GroupsData[[element]][["title"]][["Name"]])
+}
+
+IDNameDF <- do.call(rbind,
+                    Map(
+                      data.frame,
+                      IDlist = c(IDlist),
+                      Namelist = c(Namelist)
+                    ))
+
+# print(IDNameDF[IDNameDF$Namelist == 'admin@338',]$IDlist) #return name
+# print(IDNameDF[IDNameDF$IDlist == 'G0018',]$Namelist) #return ID
+
+
+APTnameOrID <- "admin@338"
+
+if(str_detect(APTnameOrID, "G[0-9]{4}") == TRUE){
+  if(APTnameOrID %in% IDlist){
+    ID <- APTnameOrID
+    for (element in GroupsData){
+      APT <- element
+    }
+  }
+}else if (str_detect(APTnameOrID, "G[0-9]{4}") == FALSE){
+  if(APTnameOrID %in% Namelist){
+    ID <- IDNameDF[IDNameDF$Namelist == 'admin@338',]$IDlist
+    # APT <- GroupsData[ID]
+    for (element in GroupsData){
+      APT <- element
+    }
+  }
+}else{
+  print("you did not enter an ID or name")
+}
+
+APTtechID <- APT[["HeadersAndTables"]][["Techniques Used"]][["ID"]]
+APTtechIDList <- list()
+for (element in APTtechID){
+  APTtechIDList <- append(APTtechIDList,element)
+}
+
+print(APTtechIDList)
+# }
+
+
+SpiderGraph("G0018")
+
+
+
