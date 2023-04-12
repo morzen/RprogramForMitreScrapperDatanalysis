@@ -114,8 +114,8 @@ GroupIDandName <- fromJSON(file=paste("/Users/morzen/Desktop/MitreAttackAPTscrap
 #NoDuplicateID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
 
 GroupIDandNamedf <- as.data.frame(GroupIDandName)
-# NoDuplicateTACTICS = GroupIDandNamedf$Tactic_s[!duplicated(GroupIDandNamedf$Tactic_s)]
-# NoDuplicateTACTICS <- as.data.frame(NoDuplicateTACTICS)
+NoDuplicateTACTICS = GroupIDandNamedf$Tactic_s[!duplicated(GroupIDandNamedf$Tactic_s)]
+NoDuplicateTACTICS <- as.data.frame(NoDuplicateTACTICS)
 
 #ID and Sodtware for gruops
 Make_geomPoint_APTY_TacticBias <- function(x, Occur, RequestedTactic) {
