@@ -173,35 +173,44 @@ APTTechCounterForTactics <- function(X, Y){
   return(AptNumberTechForTactic)
 }
 
-TechdataDF <- TechDataDFcreation(TechData)
-NoDuplicateTacticsFunc <- NoDuplicateTacticsFunc(TechdataDF)
+BarCharFunc <- function(x){
+  AptTacticsNumberOftechForEachTactic <- x
+  # Create the data for the chart
+  H <- c(AptTacticsNumberOftechForEachTactic$Count)
+  M <- c(AptTacticsNumberOftechForEachTactic$Tactics)
+  
+  par(mar=c(11,4,4,4))
+  my_bar <- barplot(height=H,
+                    names.arg=M, las=2 )
+  
+  text(my_bar, paste("n: ", H, sep="") ,cex=1) 
+  
+  
+  
+  p<-ggplot(data=AptTacticsNumberOftechForEachTactic, aes(x=Tactics, y=Count))+
+    geom_bar(stat="identity", fill="steelblue")+
+    geom_text(aes(label=Count), vjust=-0.3, size=3.5)+
+    theme_minimal()+
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
+  p
+}
 
 
-APTtechIDListWithTactics <- GetAPTTechList(GroupsData)
-APTtechIDListWithTactics <- AssossAPTidWithTechTactics(APTtechIDListWithTactics, TechdataDF)
+runrprog <- function(){
+  
+  TechdataDF <- TechDataDFcreation(TechData)
+  NoDuplicateTacticsFunc <- NoDuplicateTacticsFunc(TechdataDF)
+  
+  
+  APTtechIDListWithTactics <- GetAPTTechList(GroupsData)
+  APTtechIDListWithTactics <- AssossAPTidWithTechTactics(APTtechIDListWithTactics, TechdataDF)
+  
+  
+  
+  AptTacticsNumberOftechForEachTactic <- APTTechCounterForTactics(NoDuplicateTacticsFunc$NoDuplicateTactics, APTtechIDListWithTactics$APTTechTactics)
+  
+  BarCharFunc(AptTacticsNumberOftechForEachTactic)
+  
+}
 
-
-
-AptTacticsNumberOftechForEachTactic <- APTTechCounterForTactics(NoDuplicateTacticsFunc$NoDuplicateTactics, APTtechIDListWithTactics$APTTechTactics)
-
-BarCharFunc(AptTacticsNumberOftechForEachTactic)
-
-
-# Create the data for the chart
-H <- c(AptTacticsNumberOftechForEachTactic$Count)
-M <- c(AptTacticsNumberOftechForEachTactic$Tactics)
-
-par(mar=c(11,4,4,4))
-my_bar <- barplot(height=H,
-        names.arg=M, las=2 )
-
-text(my_bar, paste("n: ", H, sep="") ,cex=1) 
-
-
-
-p<-ggplot(data=AptTacticsNumberOftechForEachTactic, aes(x=Tactics, y=Count))+
-  geom_bar(stat="identity", fill="steelblue")+
-  geom_text(aes(label=Count), vjust=-0.3, size=3.5)+
-  theme_minimal()+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
-p
+runrprog()

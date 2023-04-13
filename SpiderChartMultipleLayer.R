@@ -244,7 +244,7 @@ APTTechCounterForTactics <- function(X, Y){
 
 
 RadargraphFunct <- function(AptNumberTechForTactic){
-  AptNumberTechForTactic <- test
+  # AptNumberTechForTactic <- test
   AllDataframeValues <- unlist(AptNumberTechForTactic)
   HighestOccurence <- max(unlist(AllDataframeValues))
   
@@ -254,18 +254,19 @@ RadargraphFunct <- function(AptNumberTechForTactic){
   
   data <- rbind(HighestOccurence,  0, data)
   
-  colnames(data) <- colnames(data)
-  rownames(data) <- row.names(data)
+  # colnames(data) <- colnames(data)
+  # rownames(data) <- row.names(data)
   
   radarchart(data.frame(data), axistype = 3, 
              plwd = 1, plty = 1
   )
-  
-  print(rownames(data[-c(1,2),]))
+  data2 <- rownames(data)
+  data2 <- data2[-c(1,2)]
+  # print(rownames(data))
   legend(x=1.5, y=1,
-         legend = rownames(data[-c(1,2),]),
+         legend = data2,
          bty = "n", pch=20 ,
-         col = 1:length(rownames(data[-c(1,2),])) ,
+         col = 1:length(data2),
          text.col = "black", cex=1.2, pt.cex=2.5)
   
 }
@@ -298,7 +299,7 @@ RunProg2 <- function(x){
   for(element in listAptToLookup){
     
     correspondingIDorName <- FindcorrespondingIDorName(element)
-    print(correspondingIDorName)
+    # print(correspondingIDorName)
     # print(element)
     APTtechIDList <- FuncAPTtechIDList(element)
     
@@ -314,11 +315,11 @@ RunProg2 <- function(x){
   FinalDataDFstart <- select(FinalDataDFstart, -c(Tactics))
   # print(FinalDataDFstart)
   # RadargraphFunct(FinalDataDFstart)
-  return(FinalDataDFstart)
+  RadargraphFunct(FinalDataDFstart)
 }
 
-APTtoLookup <- list("Aoqin Dragon")
+APTtoLookup <- list("Aoqin Dragon", "admin@338", "APT29")
 
-test <- RunProg2(APTtoLookup)
+RunProg2(APTtoLookup)
 
-RadargraphFunct(test)
+
