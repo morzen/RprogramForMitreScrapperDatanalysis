@@ -7,12 +7,15 @@ library("stringr")
 
 exit <- function() { invokeRestart("abort") } 
 
-# Mac path
-MacPwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023"
-# TacticsData <- fromJSON(file=paste(MacPwd,"/","Rformat_Tactics24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
-TechData <- fromJSON(file=paste(MacPwd,"/","Rformat_Techniques24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
-# SoftData <- fromJSON(file=paste(MacPwd,"/","Rformat_Software24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
-GroupsData <- fromJSON(file=paste(MacPwd,"/","Rformat_Groups24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
+
+# kali path /home/morzen/Desktop/work/MitreAttackAPTscrapper/results/24-03-2023
+# Mac path /Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023
+Pwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023"
+# TacticsData <- fromJSON(file=paste(Pwd,"/","Rformat_Tactics24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
+TechData <- fromJSON(file=paste(Pwd,"/","Rformat_Techniques24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
+# SoftData <- fromJSON(file=paste(Pwd,"/","Rformat_Software24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
+GroupsData <- fromJSON(file=paste(Pwd,"/","Rformat_Groups24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
+
 
 
 

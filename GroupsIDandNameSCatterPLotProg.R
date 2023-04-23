@@ -31,12 +31,12 @@ DataExtraction <- function(x) {
       print(item1)
       list1[[length(list1)+1]] = item1
     }
- 
+    
     for (item2 in items$HeadersAndTables$`Techniques Used`$Name){
       print(item2)
       list2[[length(list2)+1]] = item2
     }
-
+    
   }
   print(length(list1))
   print(length(list2))
