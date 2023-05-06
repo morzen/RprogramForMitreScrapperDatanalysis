@@ -12,14 +12,13 @@ TechData <- fromJSON(file=paste(Pwd,"/","Rformat_Techniques05-05-2023_13-04-49_M
 #SoftData <- fromJSON(file=paste(Pwd,"/","Rformat_Software24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 GroupsData <- fromJSON(file=paste(Pwd,"/","Rformat_Groups05-05-2023_13-04-49_Mitre_APT.json", sep = ""))
 
-Techlist <- list()
 
-print(typeof(TechData))
+
 
 findTactics <- function(x, y){
   ID <- x
   Techdata <- y
-  print(ID)
+  #print(ID)
   
   Techlist <- list()
   
@@ -29,10 +28,10 @@ findTactics <- function(x, y){
   
   if(ID %in% Techlist){
     
-    if('Tactics' %in% names(Techdata[ID]['SumUpTable'])){
-      Tactic_s <- Techdata[ID]['SumUpTable']['Tactics']
-    }else if('Tactic' %in% names(Techdata[ID]['SumUpTable'])){
-      Tactic_s <- Techdata[ID]['SumUpTable']['Tactic']
+    if('Tactics' %in% names(Techdata[[ID]][["SumUpTable"]])){
+      Tactic_s <- Techdata[[ID]][["SumUpTable"]][["Tactics"]]
+    }else if('Tactic' %in% names(Techdata[[ID]][["SumUpTable"]])){
+      Tactic_s <- Techdata[[ID]][["SumUpTable"]][["Tactic"]]
     }else{
       Tactic_s <- 'no tactic/s found'
     }
@@ -42,71 +41,144 @@ findTactics <- function(x, y){
   
 }
 
-Create_GroupIDandName_DF <- function(x){
+Create_GroupIDandName_DF <- function(x, y){
   
-  GroupsfileData <- x
+  GroupsfileData <-  x
+  TechData <-  y
+  
+  # GroupsfileData <- GroupsData 
+  # TechData <- TechData 
   
   TechAndSoftDict <- list()
   TechDict <- list()
   SoftDict <- list()
   
-  for(page in GroupsfileData){
-    APTID <- GroupsfileData[page]["title"]['ID']
-    APTname <- GroupsfileData[page]["title"]['Name']
+  for(page in names(GroupsfileData)){
     
-    for(tables in GroupsfileData[page]["HeadersAndTables"]){
-      #  
+
+    
+    APTID <- GroupsfileData[[page]][["title"]][["ID"]]
+    APTname <- GroupsfileData[[page]][["title"]][["Name"]]
+    
+    for(tables in names(GroupsfileData[[page]][["HeadersAndTables"]])){
+        
       if(tables == "Techniques Used"){
         
-        for( i in len(GroupsfileData[page]["HeadersAndTables"][tables]["ID"])){
+        for( i in 1:length(GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]])){
           
-          ID <- GroupsfileData[page]["HeadersAndTables"][tables]["ID"][i]
-          Name <- GroupsfileData[page]["HeadersAndTables"][tables]["Name"][i]
+          ID <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]][[i]]
+          Name <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["Name"]][[i]]
           
-          TechDict["APTID"] <- append(TechDict["APTID"], APTID)
-          TechDict["APTname"] <- append(TechDict["APTname"], APTname)
-          TechDict["ID"] <- append(TechDict["ID"], ID)
-          TechDict["Name"] <- append(TechDict["Name"], Name)
           
-          TechAndSoftDict["APTID"] <- append(TechAndSoftDict["APTID"], APTID)
-          TechAndSoftDict["APTname"] <- append(TechAndSoftDict["APTname"], APTname)
-          TechAndSoftDict["ID"] <- append(TechAndSoftDict["ID"], ID)
-          TechAndSoftDict["Name"] <- append(TechAndSoftDict["Name"], Name)
+          
+          TechDict[["APTID"]] <- append(TechDict[["APTID"]], APTID)
+          TechDict[["APTname"]] <- append(TechDict[["APTname"]], APTname)
+          TechDict[["ID"]] <- append(TechDict[["ID"]], ID)
+          TechDict[["Name"]] <- append(TechDict[["Name"]], Name)
+          
+          TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+          TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+          TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], ID)
+          TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], Name)
           
           Tactic <- findTactics(ID, TechData)
-          TechDict["Tactic_s"] <- append(TechDict["Tactic_s"], Tactic)
-          TechAndSoftDict["Tactic_s"] <- append(TechAndSoftDict["Tactic_s"], Tactic)
+          TechDict[["Tactic_s"]] <- append(TechDict[["Tactic_s"]], Tactic)
+          TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], Tactic)
+          
         }
-        
         
       }else if(tables == "Software"){
         
-        for( i in len(GroupsfileData[page]["HeadersAndTables"][tables]["ID"])){
+        for( i in 1:length(GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]])){
           
+          ID <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]][[i]]
+          Name <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["Name"]][[i]]
+          
+          SoftDict[["APTID"]] <- append(SoftDict[["APTID"]], APTID)
+          SoftDict[["APTname"]] <- append(SoftDict[["APTname"]], APTname)
+          SoftDict[["ID"]] <- append(SoftDict[["ID"]], ID)
+          SoftDict[["Name"]] <- append(SoftDict[["Name"]], Name)
+          
+          TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+          TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+          TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], ID)
+          TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], Name)
+          
+          print(ID)
+
+          TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "Software don't have killstagename information")
         } 
         
-        
-        
-      }else if(!("Techniques Used" %in% names(GroupsfileData[page]["HeadersAndTables"]))){
-        
-        
-      }else if(!("Software" %in% names(GroupsfileData[page]["HeadersAndTables"]))){
-        
-        
-      }else if(!("Techniques Used" %in% names(GroupsfileData[page]["HeadersAndTables"])) & !("Software" %in% names(GroupsfileData[page]["HeadersAndTables"]))){
-        
-        
+
+
+      }else if(!("Techniques Used" %in% names(GroupsfileData[[page]][["HeadersAndTables"]]))){
+        TechDict[["APTID"]] <- append(TechDict[["APTID"]], APTID)
+        TechDict[["APTname"]] <- append(TechDict[["APTname"]], APTname)
+        TechDict[["ID"]] <- append(TechDict[["ID"]], "No Tech Table")
+        TechDict[["Name"]] <- append(TechDict[["Name"]], "No Tech Table")
+
+        TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+        TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+        TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], "No Tech Table")
+        TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], "No Tech Table")
+
+        TechDict[["Tactic_s"]] <- append(TechDict[["Tactic_s"]], "No Tech Table")
+        TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "No Tech Table")
+
+      }else if(!("Software" %in% names(GroupsfileData[[page]][["HeadersAndTables"]]))){
+        SoftDict[["APTID"]] <- append(SoftDict[["APTID"]], APTID)
+        SoftDict[["APTname"]] <- append(SoftDict[["APTname"]], APTname)
+        SoftDict[["ID"]] <- append(SoftDict[["ID"]], "No Soft Table")
+        SoftDict[["Name"]] <- append(SoftDict[["Name"]], "No Soft Table")
+
+        TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+        TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+        TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], "No Soft Table")
+        TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], "No Soft Table")
+
+
+        TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "Software don't have killstagename information")
+
+      }else if(!("Techniques Used" %in% names(GroupsfileData[[page]][["HeadersAndTables"]])) & !("Software" %in% names(GroupsfileData[[page]][["HeadersAndTables"]]))){
+        TechDict[["APTID"]] <- append(TechDict[["APTID"]], APTID)
+        TechDict[["APTname"]] <- append(TechDict[["APTname"]], APTname)
+        TechDict[["ID"]] <- append(TechDict[["ID"]], "No Tech Table")
+        TechDict[["Name"]] <- append(TechDict[["Name"]], "No Tech Table")
+
+        TechDict[["Tactic_s"]] <- append(TechDict[["Tactic_s"]], "No Tech Table")
+
+        SoftDict[["APTID"]] <- append(SoftDict[["APTID"]], APTID)
+        SoftDict[["APTname"]] <- append(SoftDict[["APTname"]], APTname)
+        SoftDict[["ID"]] <- append(SoftDict[["ID"]], "No Soft Table")
+        SoftDict[["Name"]] <- append(SoftDict[["Name"]], "No Soft Table")
+
+        TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+        TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+        TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], "No Tech and Soft Table")
+        TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], "No Tech and Soft Table")
+
+
+        TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "No Tech and Soft Table")
+
       }else{
-        print("else")
+        foo = function(){
+          #passs
+        }
       }
-      
-      #  
+  
+    
     }
     
     
   }
   
+  #return(as.data.frame(TechDict))
+  #return(as.data.frame(SoftDict))
+  return(as.data.frame(TechAndSoftDict))
 }
+TechAndSoftDict <- Create_GroupIDandName_DF(GroupsData, TechData)
+
+
 
 
 
