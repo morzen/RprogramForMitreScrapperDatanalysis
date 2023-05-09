@@ -319,7 +319,7 @@ RunProg2 <- function(x){
   RadargraphFunct(FinalDataDFstart)
 }
 
-APTtoLookup <- list("Aoqin Dragon", "admin@338", "APT-C-36")
+APTtoLookup <- list("Aoqin Dragon", "admin@338", "APT29")
 
 RunProg2(APTtoLookup)
 

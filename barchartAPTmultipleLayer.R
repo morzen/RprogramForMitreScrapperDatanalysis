@@ -164,6 +164,7 @@ TechDataDFcreation <- function(TechData) {
   TechDataDF %>% distinct(TechDataDF$TechID, .keep_all = TRUE)#remove duplicate for techID column
   
   rownames(TechDataDF) <- 1:nrow(TechDataDF)
+  view(TechDataDF)
   return(TechDataDF)
 }
 
@@ -297,29 +298,6 @@ APTTechCounterForTactics <- function(X, Y){
   return(AptNumberTechForTactic)
 }
 
-BarCharFunc <- function(x){
-  AptTacticsNumberOftechForEachTactic <- x
-  # Create the data for the chart
-  H <- c(AptTacticsNumberOftechForEachTactic$Count)
-  M <- c(AptTacticsNumberOftechForEachTactic$Tactics)
-  
-  par(mar=c(11,4,4,4))
-  my_bar <- barplot(height=H,
-                    names.arg=M, las=2 )
-  
-  text(my_bar, paste("n: ", H, sep="") ,cex=1) 
-  
-  
-  
-  p<-ggplot(data=AptTacticsNumberOftechForEachTactic, aes(x=Tactics, y=Count))+
-    geom_bar(stat="identity", fill="steelblue")+
-    geom_text(aes(label=Count), vjust=-0.3, size=3.5)+
-    theme_minimal()+
-    scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
-  p
-}
-
-
 
 APTtacticCount <- function(x){
   
@@ -364,6 +342,49 @@ APTtacticCount <- function(x){
   return(FinalDataDFstart)
 }
 
+addColumnToOtherDataframe <- function(x, y){
+  TotaltacticsCount <- x
+  ApttacticsCount <- y
+  
+  for(name in colnames(ApttacticsCount)){
+    TotaltacticsCount[name] <- ApttacticsCount[name]
+  }
+  
+  return(TotaltacticsCount)
+}
+
+
+BarCharFunc <- function(x){
+  AptTacticsNumberOftechForEachTactic <- x
+  # Create the data for the chart
+  H <- c(AptTacticsNumberOftechForEachTactic$Count)
+  M <- c(AptTacticsNumberOftechForEachTactic$Tactics)
+  
+  par(mar=c(11,4,4,4))
+  my_bar <- barplot(height=H,
+                    names.arg=M, las=2 )
+  
+  text(my_bar, paste("n: ", H, sep="") ,cex=1) 
+  
+  
+  
+  # p<-ggplot(data=AptTacticsNumberOftechForEachTactic, aes(x=Tactics, y=Count))+
+  #   geom_bar(stat="identity", fill="steelblue")+
+  #   geom_text(aes(label=Count), vjust=-0.3, size=3.5)+
+  #   theme_minimal()+
+  #   scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
+  # p
+  
+  
+  
+  ggplot(AptTacticsNumberOftechForEachTactic, aes(fill=colnames(AptTacticsNumberOftechForEachTactic), y=Count, x=Tactics)) + 
+    geom_bar(position="dodge", stat="identity")
+}
+
+
+
+
+
 
 
 
@@ -381,7 +402,8 @@ runrprog <- function(x){
   
   
   AptTacticsNumberOftechForEachTactic <- APTTechCounterForTactics(NoDuplicateTacticsFunc$NoDuplicateTactics, APTtechIDListWithTactics$APTTechTactics)
-  
+  AptTacticsNumberOftechForEachTactic <- addColumnToOtherDataframe(AptTacticsNumberOftechForEachTactic, APTlistcountatactics)
+  view(AptTacticsNumberOftechForEachTactic)
   BarCharFunc(AptTacticsNumberOftechForEachTactic)
   
 }
@@ -391,3 +413,23 @@ runrprog <- function(x){
 
 APTtoLookup <- list("Aoqin Dragon", "admin@338", "APT29")
 runrprog(APTtoLookup)
+
+
+
+# library
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+
+# create a dataset
+specie <- c(rep("sorgho" , 3) , rep("poacee" , 3) , rep("banana" , 3) , rep("triticum" , 3) )
+condition <- rep(c("normal" , "stress" , "Nitrogen") , 4)
+value <- abs(rnorm(12 , 0 , 15))
+data <- data.frame(specie,condition,value)
+
+# Small multiple
+ggplot(data, aes(fill=condition, y=value, x=specie)) + 
+  geom_bar(position="stack", stat="identity") +
+  ggtitle("Studying 4 species..") +
+  xlab("")
+

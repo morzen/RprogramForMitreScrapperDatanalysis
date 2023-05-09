@@ -103,8 +103,6 @@ Create_GroupIDandName_DF <- function(x, y){
           TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
           TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], ID)
           TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], Name)
-          
-          print(ID)
 
           TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "Software don't have killstagename information")
         } 
@@ -172,9 +170,9 @@ Create_GroupIDandName_DF <- function(x, y){
     
   }
   
-  #return(as.data.frame(TechDict))
-  #return(as.data.frame(SoftDict))
-  return(as.data.frame(TechAndSoftDict))
+  #return(TechDict)
+  #return(SoftDict)
+  return(TechAndSoftDict)
 }
 TechAndSoftDict <- Create_GroupIDandName_DF(GroupsData, TechData)
 
@@ -186,13 +184,16 @@ TechAndSoftDict <- Create_GroupIDandName_DF(GroupsData, TechData)
 # Looking at occurence for tech with Tactics classification (can handle with soft lack of tactics message)
 ##################################################################################################
 
-GroupIDandName <- fromJSON(file=paste("/Users/morzen/Desktop/MitreAttackAPTscrapper/DataAnalysisAndformatingPythonScrip/results/GroupIDandName.json", sep = ""))
-
+#was used when the scrip above was mad ein python
+# GroupIDandName <- fromJSON(file=paste("/Users/morzen/Desktop/MitreAttackAPTscrapper/DataAnalysisAndformatingPythonScrip/results/GroupIDandName.json", sep = ""))
+# GroupIDandNamedf <- as.data.frame(GroupIDandName)
 
 #NoDuplicateAPTname = json_Techdata_frame2$APTname[!duplicated(json_Techdata_frame2$APTname)]
 #NoDuplicateID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
 
-GroupIDandNamedf <- as.data.frame(GroupIDandName)
+GroupIDandName <- TechAndSoftDict
+GroupIDandNamedf <- as.data.frame(TechAndSoftDict)
+
 NoDuplicateTACTICS = GroupIDandNamedf$Tactic_s[!duplicated(GroupIDandNamedf$Tactic_s)]
 NoDuplicateTACTICS <- as.data.frame(NoDuplicateTACTICS)
 
