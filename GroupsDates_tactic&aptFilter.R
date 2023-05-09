@@ -9,7 +9,7 @@ library("dplyr")
 
 # kali path /home/morzen/Desktop/work/MitreAttackAPTscrapper/results/24-03-2023
 # Mac path /Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023
-Pwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023"
+Pwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/Data_Oct2022/24-03-2023"
 # TacticsData <- fromJSON(file=paste(Pwd,"/","Rformat_Tactics24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 TechData <- fromJSON(file=paste(Pwd,"/","Rformat_Techniques24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 # SoftData <- fromJSON(file=paste(Pwd,"/","Rformat_Software24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
@@ -57,28 +57,35 @@ TechNameAndDatesTodatafame<- function(TechData) {
 # GET TACTICS FOR TECHNIQUES PART
 ########################
 TechDataDFcreation <- function(TechData) {
+  
+  templist <- list()
+  
   TechID <- list()
   TechTactics <- list()
-  for (Tech in TechData){
-    TechID <- append(TechID, Tech$"SumUpTable"$ID)
-    # print(names(Tech$"SumUpTable"))
+  
+  for (Tech in names(TechData)){
+    templist[["TechID"]] <- append(templist[["TechID"]], TechData[[Tech]][["SumUpTable"]][["ID"]])
     
-    if ("Tactic" %in% names(Tech$"SumUpTable")){
-      TechTactics <- append(TechTactics, Tech$"SumUpTable"$"Tactic")
+    if ("Tactic" %in% names(TechData[[Tech]][["SumUpTable"]])){
+      templist[["TechTactics"]] <- append(templist[["TechTactics"]], TechData[[Tech]][["SumUpTable"]][["Tactic"]])
     }
-    else if("Tactics" %in% names(Tech$"SumUpTable")){
-      TechTactics <- append(TechTactics, Tech$"SumUpTable"$"Tactics")
+    else if("Tactics" %in% names(TechData[[Tech]][["SumUpTable"]])){
+      templist[["TechTactics"]] <- append(templist[["TechTactics"]], TechData[[Tech]][["SumUpTable"]][["Tactics"]])
     }else{
       message("going to the else")
     }
+    
+    templist[["TechDomain"]] <- append(templist[["TechDomain"]], TechData[[Tech]][["title"]][["Domain"]])
+    
   }
   
   
   TechDataDF <- do.call(rbind,
                         Map(
                           data.frame,
-                          TechID = c(str_trim(TechID, "left")),
-                          TechTactics = c(str_trim(TechTactics, "left"))
+                          TechID = c(str_trim(templist[["TechID"]], "left")),
+                          TechTactics = c(str_trim(templist[["TechTactics"]], "left")),
+                          TechDomain = c(str_trim(templist[["TechDomain"]], "left"))
                         ))
   
   return(TechDataDF)
@@ -287,7 +294,7 @@ GetDatesForTechniques <- function(x){
   Created <- list()
   LastModif <- list()
   
-  for(element in FilteredOutputData$TechID){
+  for(element in FilteredOutputData[["TechID"]]){
     datesCreated <- paste(TechData[[element]][["SumUpTable"]][["Created"]])
     datesLastModif <- paste(TechData[[element]][["SumUpTable"]][["Last Modified"]])
 
@@ -307,24 +314,27 @@ GetDatesForTechniques <- function(x){
 
 makethegraph <- function(x){
   data <- x
-  print(typeof(x$Created))
+  #print(typeof(x$Created))
   Created_ChronologicalOrder <- as.Date(data$Created, format = "%d %B %Y")
   LastMod_ChronologicalOrder <- as.Date(data$Last_Modified, format = "%d %B %Y")
   
   ggplot(data)+
-    geom_point(aes(x=factor(Created_ChronologicalOrder), y=factor(data$TechID)),colour="black")+
-    geom_point(aes(x= factor(LastMod_ChronologicalOrder), y=factor(data$TechID)),colour="red")+
+    geom_point(aes(x=factor(Created_ChronologicalOrder), y=factor(TechID)),colour="black")+
+    geom_point(aes(x= factor(LastMod_ChronologicalOrder), y=factor(TechID)),colour="red")+
     theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
   
 }
 
 
 
-runProg <- function(a, b){
+runProg <- function(a, b, c){
   APTtoLookup <- a
   TacticsLookup <- b
+  Domain_filtering <- c
   AllTechWithTacticAssociated <- getAlltechAndTacticsAssociated(TechData)
- 
+  #filtering domain right below
+  AllTechWithTacticAssociated <- AllTechWithTacticAssociated[grepl(Domain_filtering, AllTechWithTacticAssociated$TechDomain),]
+  view(AllTechWithTacticAssociated)
   
   if(length(a) == 0 & length(b) == 0){#no filter
     print(1)
@@ -367,7 +377,8 @@ runProg <- function(a, b){
 
 APTtoLookup <- list()
 TacticsLookup <- list("Reconnaissance")
-runProg(APTtoLookup, TacticsLookup)
+Domain_filtering <- list("")
+runProg(APTtoLookup, TacticsLookup, Domain_filtering)
 
 
 

@@ -6,7 +6,6 @@ library("dplyr")
 
 # kali path /home/morzen/Desktop/work/MitreAttackAPTscrapper/results/24-03-2023
 # Mac path /Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023
-
 Pwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/Data_Oct2022/24-03-2023"
 
 TacticsData <- fromJSON(file=paste(Pwd,"/","Rformat_Tactics24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
@@ -52,6 +51,7 @@ TacticsNameAndDatesTodatafame<- function(TacticsData) {
 } 
 
 TacticsDates <- TacticsNameAndDatesTodatafame(TacticsData)
+#filtering domain, remove if you don't want the filtering
 TacticsDates <- TacticsDates[grepl("Enterprise", TacticsDates$Domain),]
 Created_ChronologicalOrder <- as.Date(TacticsDates$Created, format = "%d %B %Y")
 LastMod_ChronologicalOrder <- as.Date(TacticsDates$Last_Modified, format = "%d %B %Y")
@@ -122,7 +122,9 @@ TechNameAndDatesTodatafame<- function(TechData) {
 # }
 
 TechDates <- TechNameAndDatesTodatafame(TechData)
+#filtering domain, remove if you don't want the filtering
 TechDates <- TechDates[grepl("Enterprise", TechDates$Domain),]
+
 Created_ChronologicalOrder <- as.Date(TechDates$Created, format = "%d %B %Y")
 LastMod_ChronologicalOrder <- as.Date(TechDates$Last_Modified, format = "%d %B %Y")
 
