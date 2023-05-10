@@ -362,7 +362,8 @@ BarCharFunc <- function(x){
   
   ggplot(AptTacticsNumberOftechForEachTactic, aes(x = Tactics, y = value, fill = name))+ 
     geom_bar(stat = 'identity', position = 'dodge')+
-    theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))+
+    geom_text(aes(label=value), position = position_dodge(0.9), vjust=-0.25)
   
 }
 
