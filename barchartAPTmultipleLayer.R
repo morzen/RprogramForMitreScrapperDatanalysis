@@ -393,23 +393,24 @@ runrprog <- function(x){
   AptTacticsNumberOftechForEachTactic <- addColumnToOtherDataframe(AptTacticsNumberOftechForEachTactic, APTlistcountatactics)
   #view(AptTacticsNumberOftechForEachTactic)
   
-  BarCharFunc(AptTacticsNumberOftechForEachTactic)
-  
+  #BarCharFunc(AptTacticsNumberOftechForEachTactic)
+  return(AptTacticsNumberOftechForEachTactic)
 }
 
 
 
 
-APTtoLookup <- list("APT29")
-runrprog(APTtoLookup)
+APTtoLookup <- list("APT29", "Lazarus Group")
+#runrprog(APTtoLookup)
 
+AptTacticsNumberOftechForEachTactic <- runrprog(APTtoLookup)
 
+AptTacticsNumberOftechForEachTactic <- AptTacticsNumberOftechForEachTactic %>% tidyr::pivot_longer(cols = Count:colnames(AptTacticsNumberOftechForEachTactic)[ncol(AptTacticsNumberOftechForEachTactic)])
 
 
 ggplot(AptTacticsNumberOftechForEachTactic, aes(x = Tactics, y = value, fill = name))+
-  geom_bar(stat = 'identity', position = 'dodge', fill="steelblue")+
-  geom_text(aes(label=Count), vjust=-0.3, size=3.5)+
+  geom_bar(stat = 'identity', position = 'dodge')+
   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
+  geom_text(aes(label=value), position=position_dodge(width=0.9), vjust=-0.25)
 
 
