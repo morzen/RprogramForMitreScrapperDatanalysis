@@ -10,7 +10,7 @@ exit <- function() { invokeRestart("abort") }
 
 # kali path /home/morzen/Desktop/work/MitreAttackAPTscrapper/results/24-03-2023
 # Mac path /Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023
-Pwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/Data_Oct2022/24-03-2023"
+Pwd <- "/home/morzen/Desktop/work/MitreAttackAPTscrapper/results/Data_Oct2022/24-03-2023"
 # TacticsData <- fromJSON(file=paste(Pwd,"/","Rformat_Tactics24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 TechData <- fromJSON(file=paste(Pwd,"/","Rformat_Techniques24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 # SoftData <- fromJSON(file=paste(Pwd,"/","Rformat_Software24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
@@ -360,10 +360,13 @@ BarCharFunc <- function(x){
   
   AptTacticsNumberOftechForEachTactic <- AptTacticsNumberOftechForEachTactic %>% tidyr::pivot_longer(cols = Count:colnames(AptTacticsNumberOftechForEachTactic)[ncol(AptTacticsNumberOftechForEachTactic)])
   
-  ggplot(AptTacticsNumberOftechForEachTactic, aes(x = Tactics, y = value, fill = name))+ 
+  ggplot(AptTacticsNumberOftechForEachTactic, aes(x = Tactics, y = value, fill = name))+
     geom_bar(stat = 'identity', position = 'dodge')+
     theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+
+ 
   
+
 }
 
 
@@ -403,6 +406,10 @@ runrprog(APTtoLookup)
 
 
 
-
+ggplot(AptTacticsNumberOftechForEachTactic, aes(x = Tactics, y = value, fill = name))+
+  geom_bar(stat = 'identity', position = 'dodge', fill="steelblue")+
+  geom_text(aes(label=Count), vjust=-0.3, size=3.5)+
+  theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 10))
 
 
