@@ -5,12 +5,12 @@ library("tidyverse")
 library("dplyr")
 library("stringr")
 
-exit <- function() { invokeRestart("abort") } 
+exit <- function() { invokeRestart("abort") }
 
 
 # kali path /home/morzen/Desktop/work/MitreAttackAPTscrapper/results/24-03-2023
 # Mac path /Users/morzen/Desktop/MitreAttackAPTscrapper/results/24-03-2023
-Pwd <- "/home/morzen/Desktop/work/MitreAttackAPTscrapper/results/Data_Oct2022/24-03-2023"
+Pwd <- "/Users/morzen/Desktop/MitreAttackAPTscrapper/results/Data_Oct2022/24-03-2023"
 # TacticsData <- fromJSON(file=paste(Pwd,"/","Rformat_Tactics24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 TechData <- fromJSON(file=paste(Pwd,"/","Rformat_Techniques24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
 # SoftData <- fromJSON(file=paste(Pwd,"/","Rformat_Software24-03-2023_12-13-48_Mitre_APT.json", sep = ""))
@@ -237,7 +237,7 @@ AssossAPTidWithTechTactics <- function(x, y){
 
 APTTechCounterForTactics <- function(X, Y){
   TacticList <- X
-  TacticsForAPTtechniques <- Y 
+  TacticsForAPTtechniques <- Y
   
   # TacticList <- NoDuplicateTacticsFunc
   # TacticsForAPTtechniques <- APTtechIDListWithTactics$APTTechTactics
@@ -362,11 +362,9 @@ BarCharFunc <- function(x){
   
   ggplot(AptTacticsNumberOftechForEachTactic, aes(x = Tactics, y = value, fill = name))+
     geom_bar(stat = 'identity', position = 'dodge')+
-    theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
-
- 
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))+
+    geom_text(aes(label=value), position = position_dodge(0.9), vjust=-0.25)
   
-
 }
 
 
@@ -393,24 +391,12 @@ runrprog <- function(x){
   AptTacticsNumberOftechForEachTactic <- addColumnToOtherDataframe(AptTacticsNumberOftechForEachTactic, APTlistcountatactics)
   #view(AptTacticsNumberOftechForEachTactic)
   
-  #BarCharFunc(AptTacticsNumberOftechForEachTactic)
-  return(AptTacticsNumberOftechForEachTactic)
+  BarCharFunc(AptTacticsNumberOftechForEachTactic)
+  
 }
 
 
 
 
-APTtoLookup <- list("APT29", "Lazarus Group")
-#runrprog(APTtoLookup)
-
-AptTacticsNumberOftechForEachTactic <- runrprog(APTtoLookup)
-
-AptTacticsNumberOftechForEachTactic <- AptTacticsNumberOftechForEachTactic %>% tidyr::pivot_longer(cols = Count:colnames(AptTacticsNumberOftechForEachTactic)[ncol(AptTacticsNumberOftechForEachTactic)])
-
-
-ggplot(AptTacticsNumberOftechForEachTactic, aes(x = Tactics, y = value, fill = name))+
-  geom_bar(stat = 'identity', position = 'dodge')+
-  theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))+
-  geom_text(aes(label=value), position=position_dodge(width=0.9), vjust=-0.25)
-
-
+APTtoLookup <- list("APT29")
+runrprog(APTtoLookup)
