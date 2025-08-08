@@ -1,1 +1,5 @@
 *.csv filter=lfs diff=lfs merge=lfs -text
+oldStuff/DATABASEd_BayesianNetwork/dataforBayesiaNetwork/OTXGroupsToData.csv filter=lfs diff=lfs merge=lfs -text
+oldStuff/DATABASEd_BayesianNetwork/dataforBayesiaNetwork/comparison_Encodedtest_df.csv filter=lfs diff=lfs merge=lfs -text
+oldStuff/1_DATAusedFolder/FinalDataFrame_Apr2024.csv filter=lfs diff=lfs merge=lfs -text
+oldStuff/DATABASEd_BayesianNetwork/dataforBayesiaNetwork/TestFinal_df.csv filter=lfs diff=lfs merge=lfs -text
