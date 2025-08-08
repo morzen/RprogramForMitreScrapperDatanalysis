@@ -1,0 +1,17 @@
+pymongo 
+pgmpy
+transformers 
+datasets 
+torch
+torchvision
+torchaudio
+transformers[torch]
+fuzzywuzzy 
+python-Levenshtein
+accelerate>=0.26.0
+bitsandbytes
+bitsandbytes
+accelerate
+transformers
+tqdm
+matplotlib

@@ -1,0 +1,333 @@
+library("rjson")
+library("ggplot2")
+library("tidyverse")
+library("dplyr")
+
+#PathToResult <- read.csv("/Users/morzen/Desktop/work/RprogramForMitreScrapperDatanalysis/PathList.csv")[["PathList"]]
+PathToResult <- read.csv("/Users/morzen/Desktop/work/RprogramForMitreScrapperDatanalysis/OldProgramMultiplelayer/PathList2.csv")[["PathList"]]
+
+FilesInPath <- list.files(path = PathToResult, pattern = "Rformat_", full.names = TRUE, recursive = TRUE)
+
+fullDataSet <- list()
+
+for(Pwd in FilesInPath){
+  
+  VersionOfMitreUpdate <- gsub('/','', str_extract(Pwd, "\\/Data_[a-z,A-Z]{3}[0-9]{4}\\/"))
+  
+  ScrapDate <- gsub('/','', str_extract(Pwd, "\\/([0-9]{1,2}-[0-9]{1,2}-[0-9]{1,4})\\/"))
+  
+  if(grepl("Rformat_Tactics|Rformat_Techniques|Rformat_Software|Rformat_Groups", Pwd) == TRUE){
+    
+    datatype <- str_extract(Pwd, "Tactics|Techniques|Software|Groups")
+    
+    fullDataSet[[VersionOfMitreUpdate]][[ScrapDate]][[datatype]] <- append(fullDataSet[[VersionOfMitreUpdate]][[ScrapDate]][[datatype]], fromJSON(file=Pwd))
+    
+  }
+  
+}
+
+#TacticsData <- fullDataSet[["Data_Oct2022"]][["24-03-2023"]][["TacticsData"]]
+TechData <- fullDataSet[["Data_Oct2022"]][["24-03-2023"]][["Techniques"]]
+#SoftData <- fullDataSet[["Data_Oct2022"]][["24-03-2023"]][["Software"]]
+GroupsData <- fullDataSet[["Data_Oct2022"]][["24-03-2023"]][["Groups"]]
+
+findTactics <- function(x, y){
+  ID <- x
+  Techdata <- y
+  #print(ID)
+  
+  Techlist <- list()
+  
+  for(element in names(Techdata)){
+    Techlist <- append(Techlist, element)
+  }
+  
+  if(ID %in% Techlist){
+    
+    if('Tactics' %in% names(Techdata[[ID]][["SumUpTable"]])){
+      Tactic_s <- Techdata[[ID]][["SumUpTable"]][["Tactics"]]
+    }else if('Tactic' %in% names(Techdata[[ID]][["SumUpTable"]])){
+      Tactic_s <- Techdata[[ID]][["SumUpTable"]][["Tactic"]]
+    }else{
+      Tactic_s <- 'no tactic/s found'
+    }
+    
+    return(Tactic_s)
+  }
+  
+}
+
+Create_GroupIDandName_DF <- function(x, y){
+  
+  GroupsfileData <-  x
+  TechData <-  y
+  
+  # GroupsfileData <- GroupsData 
+  # TechData <- TechData 
+  
+  TechAndSoftDict <- list()
+  TechDict <- list()
+  SoftDict <- list()
+  
+  for(page in names(GroupsfileData)){
+    
+
+    
+    APTID <- GroupsfileData[[page]][["title"]][["ID"]]
+    APTname <- GroupsfileData[[page]][["title"]][["Name"]]
+    
+    for(tables in names(GroupsfileData[[page]][["HeadersAndTables"]])){
+        
+      if(tables == "Techniques Used"){
+        
+        for( i in 1:length(GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]])){
+          
+          ID <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]][[i]]
+          Name <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["Name"]][[i]]
+          
+          
+          
+          TechDict[["APTID"]] <- append(TechDict[["APTID"]], APTID)
+          TechDict[["APTname"]] <- append(TechDict[["APTname"]], APTname)
+          TechDict[["ID"]] <- append(TechDict[["ID"]], ID)
+          TechDict[["Name"]] <- append(TechDict[["Name"]], Name)
+          
+          TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+          TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+          TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], ID)
+          TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], Name)
+          
+          Tactic <- findTactics(ID, TechData)
+          TechDict[["Tactic_s"]] <- append(TechDict[["Tactic_s"]], Tactic)
+          TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], Tactic)
+          
+        }
+        
+      }else if(tables == "Software"){
+        
+        for( i in 1:length(GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]])){
+          
+          ID <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["ID"]][[i]]
+          Name <- GroupsfileData[[page]][["HeadersAndTables"]][[tables]][["Name"]][[i]]
+          
+          SoftDict[["APTID"]] <- append(SoftDict[["APTID"]], APTID)
+          SoftDict[["APTname"]] <- append(SoftDict[["APTname"]], APTname)
+          SoftDict[["ID"]] <- append(SoftDict[["ID"]], ID)
+          SoftDict[["Name"]] <- append(SoftDict[["Name"]], Name)
+          
+          TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+          TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+          TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], ID)
+          TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], Name)
+
+          TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "Software don't have killstagename information")
+        } 
+        
+
+
+      }else if(!("Techniques Used" %in% names(GroupsfileData[[page]][["HeadersAndTables"]]))){
+        TechDict[["APTID"]] <- append(TechDict[["APTID"]], APTID)
+        TechDict[["APTname"]] <- append(TechDict[["APTname"]], APTname)
+        TechDict[["ID"]] <- append(TechDict[["ID"]], "No Tech Table")
+        TechDict[["Name"]] <- append(TechDict[["Name"]], "No Tech Table")
+
+        TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+        TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+        TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], "No Tech Table")
+        TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], "No Tech Table")
+
+        TechDict[["Tactic_s"]] <- append(TechDict[["Tactic_s"]], "No Tech Table")
+        TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "No Tech Table")
+
+      }else if(!("Software" %in% names(GroupsfileData[[page]][["HeadersAndTables"]]))){
+        SoftDict[["APTID"]] <- append(SoftDict[["APTID"]], APTID)
+        SoftDict[["APTname"]] <- append(SoftDict[["APTname"]], APTname)
+        SoftDict[["ID"]] <- append(SoftDict[["ID"]], "No Soft Table")
+        SoftDict[["Name"]] <- append(SoftDict[["Name"]], "No Soft Table")
+
+        TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+        TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+        TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], "No Soft Table")
+        TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], "No Soft Table")
+
+
+        TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "Software don't have killstagename information")
+
+      }else if(!("Techniques Used" %in% names(GroupsfileData[[page]][["HeadersAndTables"]])) & !("Software" %in% names(GroupsfileData[[page]][["HeadersAndTables"]]))){
+        TechDict[["APTID"]] <- append(TechDict[["APTID"]], APTID)
+        TechDict[["APTname"]] <- append(TechDict[["APTname"]], APTname)
+        TechDict[["ID"]] <- append(TechDict[["ID"]], "No Tech Table")
+        TechDict[["Name"]] <- append(TechDict[["Name"]], "No Tech Table")
+
+        TechDict[["Tactic_s"]] <- append(TechDict[["Tactic_s"]], "No Tech Table")
+
+        SoftDict[["APTID"]] <- append(SoftDict[["APTID"]], APTID)
+        SoftDict[["APTname"]] <- append(SoftDict[["APTname"]], APTname)
+        SoftDict[["ID"]] <- append(SoftDict[["ID"]], "No Soft Table")
+        SoftDict[["Name"]] <- append(SoftDict[["Name"]], "No Soft Table")
+
+        TechAndSoftDict[["APTID"]] <- append(TechAndSoftDict[["APTID"]], APTID)
+        TechAndSoftDict[["APTname"]] <- append(TechAndSoftDict[["APTname"]], APTname)
+        TechAndSoftDict[["ID"]] <- append(TechAndSoftDict[["ID"]], "No Tech and Soft Table")
+        TechAndSoftDict[["Name"]] <- append(TechAndSoftDict[["Name"]], "No Tech and Soft Table")
+
+
+        TechAndSoftDict[["Tactic_s"]] <- append(TechAndSoftDict[["Tactic_s"]], "No Tech and Soft Table")
+
+      }else{
+        foo = function(){
+          #passs
+        }
+      }
+  
+    
+    }
+    
+    
+  }
+  
+  #return(TechDict)
+  #return(SoftDict)
+  return(TechAndSoftDict)
+}
+TechAndSoftDict <- Create_GroupIDandName_DF(GroupsData, TechData)
+
+
+
+
+
+##################################################################################################
+# Looking at occurence for tech with Tactics classification (can handle with soft lack of tactics message)
+##################################################################################################
+
+#was used when the scrip above was mad ein python
+# GroupIDandName <- fromJSON(file=paste("/Users/morzen/Desktop/MitreAttackAPTscrapper/DataAnalysisAndformatingPythonScrip/results/GroupIDandName.json", sep = ""))
+# GroupIDandNamedf <- as.data.frame(GroupIDandName)
+
+#NoDuplicateAPTname = json_Techdata_frame2$APTname[!duplicated(json_Techdata_frame2$APTname)]
+#NoDuplicateID = json_Techdata_frame2$ID[!duplicated(json_Techdata_frame2$ID)]
+
+GroupIDandName <- TechAndSoftDict
+GroupIDandNamedf <- as.data.frame(TechAndSoftDict)
+
+NoDuplicateTACTICS = GroupIDandNamedf$Tactic_s[!duplicated(GroupIDandNamedf$Tactic_s)]
+NoDuplicateTACTICS <- as.data.frame(NoDuplicateTACTICS)
+
+#ID and Sodtware for gruops
+Make_geomPoint_APTY_TacticBias <- function(x, Occur, RequestedTactic) {
+  Firstdataframe <- as.data.frame(x)
+  
+  ID<-Firstdataframe$ID
+  APTname<-Firstdataframe$APTname
+  Tactic_s <- Firstdataframe$Tactic_s
+  
+  GeomPointFunctionData <-data.frame(ID, APTname, Tactic_s)
+  
+  #supposed to remove every techniques whose occurence is under 10
+  GeomPointFunctionData1 <- GeomPointFunctionData %>% group_by(ID) %>% filter(n()>Occur)
+  
+  #supposed to classify techniques on x axis from biggest occurence to smallest
+  GeomPointFunctionData2 <- data.frame(GeomPointFunctionData1)
+  GeomPointFunctionData2 <- GeomPointFunctionData2 %>% filter(grepl(RequestedTactic, GeomPointFunctionData2$Tactic_s))
+  GeomPointFunctionData2 <- GeomPointFunctionData2 %>% add_count(ID) %>% arrange(desc(n))
+  
+  # comment the line below to remove the only string tactics option and have tactics combination
+  GeomPointFunctionData2 <- GeomPointFunctionData2[!grepl(",", GeomPointFunctionData2$Tactic_s),]
+  
+  
+  DataForYaxis <- GeomPointFunctionData %>% add_count(APTname) %>% arrange(desc(n))
+  
+  listnoduplicateY = DataForYaxis$APTname[!duplicated(DataForYaxis$APTname)]
+  listnoduplicateX = GeomPointFunctionData2$ID[!duplicated(GeomPointFunctionData2$ID)]
+  
+  #not sorted just filtered
+  # ggplot(GeomPointFunctionData1, aes(ID, APTname)) +
+  #   geom_point() +
+  #   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+  
+  #X axis sorted
+  # ggplot(GeomPointFunctionData2, aes(x=factor(ID, level=c(listnoduplicateX)), y=APTname)) +
+  #   geom_point() +
+  #   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+  
+  #Y axis sorted
+  # ggplot(GeomPointFunctionData2, aes(x=ID, y=factor(APTname, level=c(listnoduplicateY)))) +
+  #   geom_point() +
+  #   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+  
+  #both sorted
+  ggplot(GeomPointFunctionData2, aes(x=factor(ID, level=c(listnoduplicateX)), y=factor(APTname, level=c(listnoduplicateY)))) +
+    geom_point() +
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+}
+
+Make_geomPoint_APTX_TacticBias <- function(x, Occur, RequestedTactic) { 
+  # x <- GroupIDandName
+  # Occur <- 0
+  # RequestedTactic <- "Discovery"
+  
+  Firstdataframe <- as.data.frame(x)
+  
+  ID<-Firstdataframe$ID
+  APTname<-Firstdataframe$APTname
+  Tactic_s <- Firstdataframe$Tactic_s
+  
+  GeomPointFunctionData <-data.frame(ID, APTname, Tactic_s)
+  
+  #supposed to remove every techniques whose occurence is under Occur
+  GeomPointFunctionData1 <- GeomPointFunctionData %>% group_by(ID) %>% filter(n()>Occur)
+  
+  #supposed to classify techniques on x axis from biggest occurence to smallest
+  GeomPointFunctionData2 <- data.frame(GeomPointFunctionData1)
+  GeomPointFunctionData2 <- GeomPointFunctionData2 %>% filter(grepl(RequestedTactic, GeomPointFunctionData2$Tactic_s))
+  GeomPointFunctionData2 <- GeomPointFunctionData2 %>% add_count(ID) %>% arrange(desc(n))
+  
+  # comment the line below to remove the only string tactics option and have tactics combination
+  GeomPointFunctionData2 <- GeomPointFunctionData2[!grepl(",", GeomPointFunctionData2$Tactic_s),]
+  
+  
+  DataForXaxis <- GeomPointFunctionData %>% add_count(APTname) %>% arrange(desc(n))
+  
+  
+  listnoduplicateX = DataForXaxis$APTname[!duplicated(DataForXaxis$APTname)]
+  listnoduplicateY = GeomPointFunctionData2$ID[!duplicated(GeomPointFunctionData2$ID)]
+  
+  #nothing sorted just filtered
+  # ggplot(GeomPointFunctionData1, aes(ID, APTname)) +
+  #   geom_point() +
+  #   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+  
+  #X axis sorted
+  # ggplot(GeomPointFunctionData2, aes(x=factor(APTname, level=c(listnoduplicateX)), y=ID)) +
+  #   geom_point() +
+  #   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+  
+  #Y axis sorted
+  # ggplot(GeomPointFunctionData2, aes(x=APTname, y=factor(ID, level=c(listnoduplicateY)))) +
+  #   geom_point() +
+  #   theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+  
+  #both sorted
+  ggplot(GeomPointFunctionData2, aes(x=factor(APTname, level=c(listnoduplicateX)), y=factor(ID, level=c(listnoduplicateY)))) +
+    geom_point() +
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust = 1))
+}
+
+#the int is for the number of occurence of techniques not apts
+Make_geomPoint_APTY_TacticBias(GroupIDandName, 5, '')
+
+Make_geomPoint_APTX_TacticBias(GroupIDandName, 2, '')
+
+
+clearAllExceptenvironment <- function(x, Occur) {
+  # Clear packages
+  #p_unload(dplyr, tidyr, stringr) # Clear specific packages
+  p_unload(all)  # Easier: clears all add-ons
+  detach("package:datasets", unload = TRUE)  # For base
+  
+  # Clear console
+  cat("\014")  # ctrl+L
+}
+clearAllExceptenvironment()
+
+
