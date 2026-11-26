@@ -1,2 +1,8 @@
 .DS_Store
 MostRecentVersion_stuff/NewDatabase_BayesianNetwork/venv*/
+.Rproj.user
+oldStuff/DATABASEd_BayesianNetwork/COMPLETE_FINAL_DATASET*
+oldStuff/DATABASEd_BayesianNetwork/FILTERED_3_APTS.csv
+venv*/
+.RData
+.Rhistory
